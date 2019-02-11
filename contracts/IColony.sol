@@ -331,7 +331,7 @@ contract IColony is ColonyDataTypes, IRecovery {
   /// @return completionTimestamp Task completion timestamp
   /// @return domainId Task domain id, default is root colony domain with id 1
   /// @return skillIds Array of global skill ids assigned to task
-  function getTask(uint256 _id) public view returns ( 
+  function getTask(uint256 _id) public view returns (
     bytes32 specificationHash,
     bytes32 deliverableHash,
     TaskStatus status,
@@ -486,9 +486,10 @@ contract IColony is ColonyDataTypes, IRecovery {
 
   /// @notice A temporary function to enable single-transaction payouts for eth-denver
   /// @param _worker Address of the recipient of the payment
-  /// @param _domainId Domain to take the payment from
   /// @param _token Token to make the payment in
   /// @param _amount Amount of the payment to make. Note that the network fee will be taken from this amount
-  function makePayment(address _worker, uint256 _domainId, address _token, uint256 _amount) public;
+  /// @param _domainId Domain to take the payment from
+  /// @param _skillId ID of the global skill to award with the payment.
+  function makePayment(address _worker, address _token, uint256 _amount, uint256 _domainId, uint256 _skillId) public;
 
 }

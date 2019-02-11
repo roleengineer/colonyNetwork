@@ -23,7 +23,7 @@ import "./../../lib/dappsys/roles.sol";
 
 
 contract OneTxPayment {
-  function makePayment(address _colony, address _worker, uint256 _domainId, address _token, uint256 _amount) public {
+  function makePayment(address _colony, address _worker, address _token, uint256 _amount, uint256 _domainId, uint256 _skillId) public {
     IColony colony = IColony(_colony);
 
     // Check caller is able to call makePayment on the colony
@@ -31,15 +31,15 @@ contract OneTxPayment {
     DSRoles authority = DSRoles(colony.authority());
     require(
       authority.canCall(
-        msg.sender, 
-        _colony, 
-        bytes4(keccak256("makePayment(address,uint256,address,uint256)"))
+        msg.sender,
+        _colony,
+        bytes4(keccak256("makePayment(address,address,uint256,uint256,uint256)"))
       ),
       "colony-one-tx-payment-not-authorized"
     );
 
     // Make payment
-    colony.makePayment(_worker, _domainId, _token, _amount);
+    colony.makePayment(_worker, _token, _amount, _domainId, _skillId);
   }
 
 

@@ -251,15 +251,19 @@ contract Colony is ColonyStorage, PatriciaTreeProofs {
     require(!protected, "colony-protected-variable");
   }
 
-  function makePayment(address _worker, uint256 _domainId, address _token, uint256 _amount) public auth stoppable {
+  function makePayment(address _worker, address _token, uint256 _amount, uint256 _domainId, uint256 _skillId)
+  public
+  domainExists(_domainId)
+  skillExists(_skillId)
+  globalSkill(_skillId)
+  auth stoppable
+  {
     // This function isn't going to be here in the future. Let's stop people trying to call it directly, which they won't be able to do in the future.
     require(tx.origin != msg.sender, "colony-do-not-call-function-directly"); // solium-disable-line  security/no-tx-origin
 
     IColony colony = IColony(address(this));
-    IColonyNetwork colonyNetwork = IColonyNetwork(colonyNetworkAddress);
-    uint rootGlobalSkillId = colonyNetwork.getRootGlobalSkillId();
 
-    colony.makeTask(0x00, _domainId, rootGlobalSkillId, now);
+    colony.makeTask(0x00, _domainId, _skillId, now);
     colony.setTaskWorkerRole(taskCount, _worker);
     colony.setTaskWorkerPayout(taskCount, _token, _amount);
     colony.moveFundsBetweenPots(domains[_domainId].fundingPotId, tasks[taskCount].fundingPotId, _amount, _token);

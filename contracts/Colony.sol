@@ -251,7 +251,7 @@ contract Colony is ColonyStorage, PatriciaTreeProofs {
     require(!protected, "colony-protected-variable");
   }
 
-  function makePayment(address _colony, address _worker, uint256 _domainId, address _token, uint256 _amount) public auth stoppable {
+  function makePayment(address _worker, uint256 _domainId, address _token, uint256 _amount) public auth stoppable {
     // This function isn't going to be here in the future. Let's stop people trying to call it directly, which they won't be able to do in the future.
     require(tx.origin != msg.sender, "colony-do-not-call-function-directly"); // solium-disable-line  security/no-tx-origin
 

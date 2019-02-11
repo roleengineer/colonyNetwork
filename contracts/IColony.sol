@@ -485,11 +485,10 @@ contract IColony is ColonyDataTypes, IRecovery {
   function getNonRewardPotsTotal(address _token) public view returns (uint256 amount);
 
   /// @notice A temporary function to enable single-transaction payouts for eth-denver
-  /// @param _colony Address of the colony to make the payment from
   /// @param _worker Address of the recipient of the payment
   /// @param _domainId Domain to take the payment from
   /// @param _token Token to make the payment in
   /// @param _amount Amount of the payment to make. Note that the network fee will be taken from this amount
-  function makePayment(address _colony, address _worker, uint256 _domainId, address _token, uint256 _amount) public;
+  function makePayment(address _worker, uint256 _domainId, address _token, uint256 _amount) public;
 
 }

@@ -29,10 +29,17 @@ contract OneTxPayment {
     // Check caller is able to call makePayment on the colony
     // msg.sig is the same for this call as it is for the one we make below, so may as well use it here
     DSRoles authority = DSRoles(colony.authority());
-    require(authority.canCall(msg.sender, _colony, msg.sig), "colony-one-tx-payment-not-authorized");
+    require(
+      authority.canCall(
+        msg.sender, 
+        _colony, 
+        bytes4(keccak256("makePayment(address,uint256,address,uint256)"))
+      ),
+      "colony-one-tx-payment-not-authorized"
+    );
 
     // Make payment
-    colony.makePayment(_colony, _worker, _domainId, _token, _amount);
+    colony.makePayment(_worker, _domainId, _token, _amount);
   }
 
 

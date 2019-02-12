@@ -11,6 +11,7 @@ const { expect } = chai;
 chai.use(bnChai(web3.utils.BN));
 
 const OneTxPayment = artifacts.require("OneTxPayment");
+const IReputationMiningCycle = artifacts.require("IReputationMiningCycle");
 
 contract("One transaction payments", accounts => {
   let colony;
@@ -37,6 +38,9 @@ contract("One transaction payments", accounts => {
 
   describe("Under normal conditions", () => {
     it("should allow a single transaction payment of tokens to occur", async () => {
+      const inactiveReputationMiningCycleAddress = await colonyNetwork.getReputationMiningCycle(false);
+      const inactiveReputationMiningCycle = await IReputationMiningCycle.at(inactiveReputationMiningCycleAddress);
+      const lengthBefore = await inactiveReputationMiningCycle.getReputationUpdateLogLength();
       const balanceBefore = await token.balanceOf(accounts[4]);
       expect(balanceBefore).to.eq.BN(0);
       await fundColonyWithTokens(colony, token, INITIAL_FUNDING);
@@ -45,9 +49,15 @@ contract("One transaction payments", accounts => {
       // Check it completed
       const balanceAfter = await token.balanceOf(accounts[4]);
       expect(balanceAfter).to.eq.BN(9);
+      // This should have added entries to the reputation log
+      const lengthAfter = await inactiveReputationMiningCycle.getReputationUpdateLogLength();
+      expect(lengthAfter.sub(lengthBefore)).to.eq.BN(2);
     });
 
     it("should allow a single transaction payment of ETH to occur", async () => {
+      const inactiveReputationMiningCycleAddress = await colonyNetwork.getReputationMiningCycle(false);
+      const inactiveReputationMiningCycle = await IReputationMiningCycle.at(inactiveReputationMiningCycleAddress);
+      const lengthBefore = await inactiveReputationMiningCycle.getReputationUpdateLogLength();
       const balanceBefore = await web3.eth.getBalance(accounts[4]);
       await colony.send(10); // NB 10 wei, not ten ether!
       await colony.claimColonyFunds(ZERO_ADDRESS);
@@ -57,6 +67,9 @@ contract("One transaction payments", accounts => {
       const balanceAfter = await web3.eth.getBalance(accounts[4]);
       // So only 9 here, because of the same rounding errors as applied to the token
       expect(new web3.utils.BN(balanceAfter).sub(new web3.utils.BN(balanceBefore))).to.eq.BN(9);
+      // This should not have added entries to the reputation log
+      const lengthAfter = await inactiveReputationMiningCycle.getReputationUpdateLogLength();
+      expect(lengthAfter).to.eq.BN(lengthBefore);
     });
 
     it("should not allow a non-admin to make a single-transaction payment", async () => {

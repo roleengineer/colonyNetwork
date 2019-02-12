@@ -269,6 +269,11 @@ contract Colony is ColonyStorage, PatriciaTreeProofs {
     colony.moveFundsBetweenPots(domains[_domainId].fundingPotId, tasks[taskCount].fundingPotId, _amount, _token);
 
     tasks[taskCount].status = TaskStatus.Finalized;
+    // If we're paying out a colony's own token, add reputation.
+    if (_token == token) {
+      IColonyNetwork(colonyNetworkAddress).appendReputationUpdateLog(_worker, int256(_amount), domains[_domainId].skillId);
+      IColonyNetwork(colonyNetworkAddress).appendReputationUpdateLog(_worker, int256(_amount), _skillId);
+    }
     colony.claimPayout(taskCount, uint8(TaskRole.Worker), _token);
   }
 

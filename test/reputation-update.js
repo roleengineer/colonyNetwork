@@ -8,6 +8,7 @@ import {
   fundColonyWithTokens,
   setupFundedTask,
   setupFinalizedTask,
+  claimAllPayouts,
   setupColonyNetwork,
   setupMetaColonyWithLockedCLNYToken,
   giveUserCLNYTokensAndStake
@@ -81,7 +82,7 @@ contract("Reputation Updates", accounts => {
 
   describe("when added", () => {
     it("should be readable", async () => {
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
 
       const repLogEntryManager = await inactiveReputationMiningCycle.getReputationUpdateLogEntry(1);
       expect(repLogEntryManager.user).to.equal(MANAGER);
@@ -130,12 +131,13 @@ contract("Reputation Updates", accounts => {
     ];
 
     ratings.forEach(async rating => {
-      it(`should set the correct reputation change amount in log for rating ${rating.worker}`, async () => {
+      it.only(`should set the correct reputation change amount in log for rating ${rating.worker}`, async () => {
         await setupFinalizedTask({
           colonyNetwork,
           colony: metaColony,
           managerRating: rating.manager,
-          workerRating: rating.worker
+          workerRating: rating.worker,
+          claimPayouts: true
         });
 
         const repLogEntryManager = await inactiveReputationMiningCycle.getReputationUpdateLogEntry(1);
@@ -155,7 +157,8 @@ contract("Reputation Updates", accounts => {
         }
         expect(repLogEntryManager.nPreviousUpdates).to.eq.BN(4); // Miner reward updates
 
-        const repLogEntryWorker = await inactiveReputationMiningCycle.getReputationUpdateLogEntry(3);
+        const workerEntryPosition = (rating.worker === 1) ? 2 : 3 // Reputation decreases are emitted before reputation increases
+        const repLogEntryWorker = await inactiveReputationMiningCycle.getReputationUpdateLogEntry(workerEntryPosition);
         expect(repLogEntryWorker.user).to.equal(WORKER);
         expect(repLogEntryWorker.amount).to.eq.BN(rating.reputationChangeWorker);
         expect(repLogEntryWorker.skillId).to.eq.BN(2);
@@ -180,6 +183,7 @@ contract("Reputation Updates", accounts => {
       await metaColony.submitTaskDeliverable(taskId, DELIVERABLE_HASH, { from: WORKER });
       await forwardTime(SECONDS_PER_DAY * 11, this);
       await metaColony.finalizeTask(taskId);
+      await claimAllPayouts({ colony: metaColony, taskId, token: clnyToken });
 
       const repLogEntryManager = await inactiveReputationMiningCycle.getReputationUpdateLogEntry(1);
       expect(repLogEntryManager.user).to.equal(MANAGER);
@@ -205,14 +209,15 @@ contract("Reputation Updates", accounts => {
       await metaColony.revealTaskWorkRating(taskId, MANAGER_ROLE, 2, RATING_2_SALT, { from: WORKER });
       await forwardTime(SECONDS_PER_DAY * 6, this);
       await metaColony.finalizeTask(taskId);
+      await claimAllPayouts({ colony: metaColony, taskId, token: clnyToken });
 
-      const repLogEntryManager = await inactiveReputationMiningCycle.getReputationUpdateLogEntry(1);
-      expect(repLogEntryManager.user).to.equal(MANAGER);
-      expect(repLogEntryManager.amount).to.eq.BN(MANAGER_PAYOUT);
-
-      const repLogEntryEvaluator = await inactiveReputationMiningCycle.getReputationUpdateLogEntry(2);
+      const repLogEntryEvaluator = await inactiveReputationMiningCycle.getReputationUpdateLogEntry(1);
       expect(repLogEntryEvaluator.user).to.equal(accounts[1]);
       expect(repLogEntryEvaluator.amount).to.eq.BN(EVALUATOR_PAYOUT.muln(3).divn(2).neg()); // eslint-disable-line prettier/prettier
+
+      const repLogEntryManager = await inactiveReputationMiningCycle.getReputationUpdateLogEntry(2);
+      expect(repLogEntryManager.user).to.equal(MANAGER);
+      expect(repLogEntryManager.amount).to.eq.BN(MANAGER_PAYOUT);
 
       const repLogEntryWorker1 = await inactiveReputationMiningCycle.getReputationUpdateLogEntry(3);
       expect(repLogEntryWorker1.user).to.equal(WORKER);
@@ -231,6 +236,7 @@ contract("Reputation Updates", accounts => {
       await metaColony.revealTaskWorkRating(taskId, WORKER_ROLE, 2, RATING_1_SALT, { from: accounts[1] });
       await forwardTime(SECONDS_PER_DAY * 6, this);
       await metaColony.finalizeTask(taskId);
+      await claimAllPayouts({ colony: metaColony, taskId, token: clnyToken });
 
       const repLogEntryManager = await inactiveReputationMiningCycle.getReputationUpdateLogEntry(1);
       expect(repLogEntryManager.user).to.equal(MANAGER);
@@ -258,7 +264,7 @@ contract("Reputation Updates", accounts => {
 
     it("should populate nPreviousUpdates correctly", async () => {
       const initialRepLogLength = await inactiveReputationMiningCycle.getReputationUpdateLogLength();
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
 
       let repLogEntry = await inactiveReputationMiningCycle.getReputationUpdateLogEntry(initialRepLogLength.addn(1));
       const nPrevious = new BN(repLogEntry.nPreviousUpdates);
@@ -276,12 +282,12 @@ contract("Reputation Updates", accounts => {
       await metaColony.addGlobalSkill(5);
       await metaColony.addGlobalSkill(6);
 
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony, skillId: 5 });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, skillId: 5, claimPayouts: true });
       let repLogEntryWorker = await inactiveReputationMiningCycle.getReputationUpdateLogEntry(4);
       expect(repLogEntryWorker.amount).to.eq.BN(WORKER_PAYOUT);
       expect(repLogEntryWorker.nUpdates).to.eq.BN(6);
 
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony, skillId: 6 });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, skillId: 6, claimPayouts: true });
       repLogEntryWorker = await inactiveReputationMiningCycle.getReputationUpdateLogEntry(8);
       expect(repLogEntryWorker.amount).to.eq.BN(WORKER_PAYOUT);
       expect(repLogEntryWorker.nUpdates).to.eq.BN(8); // Negative reputation change means children change as well.
@@ -289,7 +295,7 @@ contract("Reputation Updates", accounts => {
 
     it("should correctly make large positive reputation updates", async () => {
       await fundColonyWithTokens(metaColony, clnyToken, INT256_MAX);
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony, workerPayout: MAX_PAYOUT, workerRating: 3 });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, workerPayout: MAX_PAYOUT, workerRating: 3, claimPayouts: true });
 
       const repLogEntryWorker = await inactiveReputationMiningCycle.getReputationUpdateLogEntry(4);
       expect(repLogEntryWorker.user).to.equal(WORKER);
@@ -309,19 +315,20 @@ contract("Reputation Updates", accounts => {
       // Run out the submissions window to get the no-rate penalty for the worker.
       await forwardTime(SECONDS_PER_DAY * 5, this);
       await metaColony.finalizeTask(taskId);
+      await claimAllPayouts({ colony: metaColony, taskId, token: clnyToken });
 
       const roleWorker = await metaColony.getTaskRole(taskId, WORKER_ROLE);
       expect(roleWorker.rateFail).to.be.true;
       expect(roleWorker.rating).to.eq.BN(workerRating);
 
-      const repLogEntryWorker = await inactiveReputationMiningCycle.getReputationUpdateLogEntry(4);
+      const repLogEntryWorker = await inactiveReputationMiningCycle.getReputationUpdateLogEntry(1);
       expect(repLogEntryWorker.user).to.equal(WORKER);
       expect(repLogEntryWorker.amount).to.eq.BN(INT128_MIN);
     });
 
     it("should not make zero-valued reputation updates", async () => {
       await fundColonyWithTokens(metaColony, clnyToken, INITIAL_FUNDING);
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony, workerPayout: 0 });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, workerPayout: 0, claimPayouts: true });
 
       // Entries for manager and evaluator only + 1 for miner reward
       const numUpdates = await inactiveReputationMiningCycle.getReputationUpdateLogLength();

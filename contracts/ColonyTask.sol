@@ -332,6 +332,10 @@ contract ColonyTask is ColonyStorage {
     require(rating != TaskRatings.None, "colony-task-rating-missing");
     payments[_id].roles[uint8(_role)].rating = rating;
 
+    if (_role == TaskRole.Worker) {
+      payments[_id].roles[uint8(TaskRole.Evaluator)].rating = TaskRatings.Satisfactory;
+    }
+
     emit TaskWorkRatingRevealed(_id, _role, _rating);
   }
 
@@ -481,10 +485,13 @@ contract ColonyTask is ColonyStorage {
       assignWorkRating(_id);
     }
 
-    payments[_id].status = TaskStatus.Finalized;
+    Payment storage payment = payments[_id];
+    payment.status = TaskStatus.Finalized;
 
     for (uint8 roleId = 0; roleId <= 2; roleId++) {
-      updateReputation(TaskRole(roleId), _id);
+      if (payment.roles[roleId].rating == TaskRatings.Unsatisfactory) {
+        updateReputationPenalty(roleId, _id);
+      }
     }
 
     emit TaskFinalized(_id);
@@ -542,37 +549,24 @@ contract ColonyTask is ColonyStorage {
     emit TaskCompleted(_id);
   }
 
-  function updateReputation(TaskRole taskRole, uint256 _id) internal {
-    IColonyNetwork colonyNetworkContract = IColonyNetwork(colonyNetworkAddress);
-    uint8 roleId = uint8(taskRole);
+  function updateReputationPenalty(uint8 roleId, uint256 _id) internal {
     Payment storage payment = payments[_id];
     Role storage role = payment.roles[roleId];
-
-    if (taskRole == TaskRole.Evaluator) { // They had one job!
-      role.rating = role.rateFail ? TaskRatings.Unsatisfactory : TaskRatings.Satisfactory;
-    }
+    assert(role.rating == TaskRatings.Unsatisfactory);
 
     uint256 payout = payment.payouts[roleId][token];
-    int256 reputation = getReputation(payout, role.rating, role.rateFail);
+    int256 reputation = calculateReputationPenalty(payout, role.rateFail);
 
+    IColonyNetwork colonyNetworkContract = IColonyNetwork(colonyNetworkAddress);
     colonyNetworkContract.appendReputationUpdateLog(role.user, reputation, domains[payment.domainId].skillId);
-    if (taskRole == TaskRole.Worker) {
-      colonyNetworkContract.appendReputationUpdateLog(role.user, reputation, payments[_id].skills[0]);
+    if (roleId == uint8(TaskRole.Worker)) {
+      colonyNetworkContract.appendReputationUpdateLog(role.user, reputation, payment.skills[0]);
     }
   }
 
-  function getReputation(uint256 payout, TaskRatings rating, bool rateFail) internal pure returns (int256) {
-    require(rating != TaskRatings.None, "colony-task-rating-invalid");
-
-    bool negative = (rating == TaskRatings.Unsatisfactory);
-    uint256 reputation = mul(payout, (rating == TaskRatings.Excellent) ? 3 : 2);
-
-    if (rateFail) {
-      reputation = negative ? add(reputation, payout) : sub(reputation, payout);
-    }
-
-    // We may lose one atom of reputation here :sad:
-    return int256(reputation / 2) * (negative ? int256(-1) : int256(1));
+  function calculateReputationPenalty(uint256 payout, bool rateFail) internal pure returns (int256) {
+    uint256 reputation = mul(payout, rateFail ? 3 : 2);
+    return -int256(reputation / 2); // We may lose one wei of reputation here :sad:
   }
 
   function getReviewerAddresses(
@@ -652,6 +646,7 @@ contract ColonyTask is ColonyStorage {
 
     if (workerRole.rating == TaskRatings.None) {
       evaluatorRole.rateFail = true;
+      evaluatorRole.rating = TaskRatings.Unsatisfactory; // They had one job!
       workerRole.rating = TaskRatings.Excellent;
     }
 

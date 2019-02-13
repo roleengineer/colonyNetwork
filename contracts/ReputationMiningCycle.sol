@@ -400,6 +400,8 @@ contract ReputationMiningCycle is ReputationMiningCycleStorage, PatriciaTreeProo
     disputeRounds[round][index].upperBound = disputeRounds[round][index].jrhNNodes - 1;
   }
 
+  event MakeReputationUpdate(address _user, int256 _amount, uint256 _skillId);
+
   function appendReputationUpdateLog(
     address _user,
     int256 _amount,
@@ -435,6 +437,8 @@ contract ReputationMiningCycle is ReputationMiningCycleStorage, PatriciaTreeProo
       _colonyAddress,
       nUpdates,
       nPreviousUpdates));
+
+    emit MakeReputationUpdate(_user, amount, _skillId);
   }
 
   function getReputationUpdateLogLength() public view returns (uint) {

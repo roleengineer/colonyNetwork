@@ -174,11 +174,7 @@ contract("Colony Reward Payouts", accounts => {
 
       await metaColony.addGlobalSkill(1);
       const id = await colonyNetwork.getChildSkillId(1, 0);
-      await setupFinalizedTask({
-        colonyNetwork,
-        colony,
-        skillId: id
-      });
+      await setupFinalizedTask({ colonyNetwork, colony, skillId: id, claimPayouts: true });
 
       await advanceMiningCycleNoContest({ colonyNetwork, client, test: this });
       await advanceMiningCycleNoContest({ colonyNetwork, client, test: this });

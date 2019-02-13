@@ -13,6 +13,7 @@ import {
   RATING_1_SALT,
   RATING_2_SALT,
   MANAGER_ROLE,
+  EVALUATOR_ROLE,
   WORKER_ROLE,
   SPECIFICATION_HASH,
   DELIVERABLE_HASH,
@@ -260,7 +261,8 @@ export async function setupFinalizedTask({
   managerRating,
   managerRatingSalt,
   workerRating,
-  workerRatingSalt
+  workerRatingSalt,
+  claimPayouts = false
 }) {
   const accounts = await web3GetAccounts();
   manager = manager || accounts[0]; // eslint-disable-line no-param-reassign
@@ -287,7 +289,22 @@ export async function setupFinalizedTask({
   });
 
   await colony.finalizeTask(taskId);
+
+  if (claimPayouts) {
+    if (token === undefined) {
+      const tokenAddress = await colony.getToken()
+      token = await Token.at(tokenAddress); // eslint-disable-line no-param-reassign
+    }
+    await claimAllPayouts({ colony, taskId, token });
+  }
+
   return taskId;
+}
+
+export async function claimAllPayouts({ colony, taskId, token }) {
+  await colony.claimPayout(taskId, MANAGER_ROLE, token.address);
+  await colony.claimPayout(taskId, EVALUATOR_ROLE, token.address);
+  await colony.claimPayout(taskId, WORKER_ROLE, token.address);
 }
 
 export async function giveUserCLNYTokens(colonyNetwork, userAddress, amount) {

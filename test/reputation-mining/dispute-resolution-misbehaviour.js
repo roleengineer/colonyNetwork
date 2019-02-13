@@ -168,7 +168,7 @@ contract("Reputation Mining - disputes resolution misbehaviour", accounts => {
       await fundColonyWithTokens(metaColony, clnyToken, INITIAL_FUNDING.muln(8));
       for (let i = 0; i < 8; i += 1) {
         await giveUserCLNYTokensAndStake(colonyNetwork, accountsForTest[i], DEFAULT_STAKE);
-        await setupFinalizedTask({ colonyNetwork, colony: metaColony, worker: accountsForTest[i] });
+        await setupFinalizedTask({ colonyNetwork, colony: metaColony, worker: accountsForTest[i], claimPayouts: true });
         // These have to be done sequentially because this function uses the total number of tasks as a proxy for getting the
         // right taskId, so if they're all created at once it messes up.
       }
@@ -242,8 +242,8 @@ contract("Reputation Mining - disputes resolution misbehaviour", accounts => {
       await advanceMiningCycleNoContest({ colonyNetwork, test: this });
 
       await fundColonyWithTokens(metaColony, clnyToken, INITIAL_FUNDING.muln(4));
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
       await setupFinalizedTask({
         colonyNetwork,
         colony: metaColony,
@@ -253,7 +253,8 @@ contract("Reputation Mining - disputes resolution misbehaviour", accounts => {
         workerRating: 1,
         managerPayout: 1,
         evaluatorPayout: 1,
-        workerPayout: 1
+        workerPayout: 1,
+        claimPayouts: true
       });
 
       await advanceMiningCycleNoContest({ colonyNetwork, client: goodClient, test: this });
@@ -273,7 +274,8 @@ contract("Reputation Mining - disputes resolution misbehaviour", accounts => {
             workerRating: 1,
             managerPayout: 1,
             evaluatorPayout: 1,
-            workerPayout: 1
+            workerPayout: 1,
+            claimPayouts: true
           }
         );
 
@@ -453,9 +455,9 @@ contract("Reputation Mining - disputes resolution misbehaviour", accounts => {
       await giveUserCLNYTokensAndStake(colonyNetwork, MINER2, DEFAULT_STAKE);
 
       await fundColonyWithTokens(metaColony, clnyToken, INITIAL_FUNDING.muln(3));
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
 
       await advanceMiningCycleNoContest({ colonyNetwork, test: this });
 
@@ -540,7 +542,7 @@ contract("Reputation Mining - disputes resolution misbehaviour", accounts => {
       await repCycle.confirmNewHash(1);
     });
 
-    it("should correctly check the proof of the origin skill and child skill reputations, if necessary", async () => {
+    it.only("should correctly check the proof of the origin skill and child skill reputations, if necessary", async () => {
       await giveUserCLNYTokensAndStake(colonyNetwork, MINER1, DEFAULT_STAKE);
       await giveUserCLNYTokensAndStake(colonyNetwork, MINER2, DEFAULT_STAKE);
 
@@ -563,7 +565,8 @@ contract("Reputation Mining - disputes resolution misbehaviour", accounts => {
         workerPayout: 5000000000000,
         managerRating: 3,
         workerRating: 3,
-        worker: MINER2
+        worker: MINER2,
+        claimPayouts: true
       });
 
       await setupFinalizedTask({
@@ -575,7 +578,8 @@ contract("Reputation Mining - disputes resolution misbehaviour", accounts => {
         workerPayout: 1000000000000,
         managerRating: 1,
         workerRating: 1,
-        worker: MINER2
+        worker: MINER2,
+        claimPayouts: true
       });
 
       await advanceMiningCycleNoContest({ colonyNetwork, test: this });
@@ -814,13 +818,13 @@ contract("Reputation Mining - disputes resolution misbehaviour", accounts => {
       await repCycle.confirmNewHash(1);
     });
 
-    it("should correctly require the proof of the reputation under dispute before and after the change in question", async () => {
+    it.only("should correctly require the proof of the reputation under dispute before and after the change in question", async () => {
       await giveUserCLNYTokensAndStake(colonyNetwork, MINER2, DEFAULT_STAKE);
 
       await fundColonyWithTokens(metaColony, clnyToken, INITIAL_FUNDING.muln(3));
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
 
       await advanceMiningCycleNoContest({ colonyNetwork, test: this });
 
@@ -1095,14 +1099,14 @@ contract("Reputation Mining - disputes resolution misbehaviour", accounts => {
 
     [{ word: "high", badClient1Argument: 1, badClient2Argument: 1 }, { word: "low", badClient1Argument: 9, badClient2Argument: -1 }].forEach(
       async args => {
-        it(`should fail to respondToChallenge if supplied log entry does not correspond to the entry under disagreement and supplied log entry
+        it.only(`should fail to respondToChallenge if supplied log entry does not correspond to the entry under disagreement and supplied log entry
           is too ${args.word}`, async () => {
           await giveUserCLNYTokensAndStake(colonyNetwork, MINER2, DEFAULT_STAKE);
           await giveUserCLNYTokensAndStake(colonyNetwork, MINER3, DEFAULT_STAKE);
 
           await fundColonyWithTokens(metaColony, clnyToken, INITIAL_FUNDING.muln(2));
-          await setupFinalizedTask({ colonyNetwork, colony: metaColony });
-          await setupFinalizedTask({ colonyNetwork, colony: metaColony });
+          await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
+          await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
 
           await advanceMiningCycleNoContest({ colonyNetwork, test: this });
           const repCycle = await getActiveRepCycle(colonyNetwork);

@@ -188,7 +188,7 @@ process.env.SOLIDITY_COVERAGE
           expect(client1Hash).to.equal(client2Hash);
         });
 
-        it("should be able to correctly get the proof for a reputation in a historical state without affecting the current miner state", async () => {
+        it.only("should be able to correctly get the proof for a reputation in a historical state without affecting the current miner state", async () => {
           await reputationMiner1.saveCurrentState();
 
           const clientHash1 = await reputationMiner1.reputationTree.getRootHash();

@@ -134,7 +134,7 @@ contract("Reputation Mining - types of disagreement", accounts => {
       await giveUserCLNYTokensAndStake(colonyNetwork, MINER2, DEFAULT_STAKE);
 
       await fundColonyWithTokens(metaColony, clnyToken);
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
 
       await advanceMiningCycleNoContest({ colonyNetwork, test: this });
 
@@ -242,9 +242,9 @@ contract("Reputation Mining - types of disagreement", accounts => {
       await giveUserCLNYTokensAndStake(colonyNetwork, MINER2, DEFAULT_STAKE);
 
       await fundColonyWithTokens(metaColony, clnyToken, INITIAL_FUNDING.muln(3));
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
 
       await advanceMiningCycleNoContest({ colonyNetwork, test: this });
 
@@ -363,9 +363,9 @@ contract("Reputation Mining - types of disagreement", accounts => {
       await giveUserCLNYTokensAndStake(colonyNetwork, MINER2, DEFAULT_STAKE);
 
       await fundColonyWithTokens(metaColony, clnyToken, INITIAL_FUNDING.muln(3));
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
 
       await advanceMiningCycleNoContest({ colonyNetwork, test: this });
 
@@ -409,9 +409,9 @@ contract("Reputation Mining - types of disagreement", accounts => {
       await giveUserCLNYTokensAndStake(colonyNetwork, MINER2, DEFAULT_STAKE);
 
       await fundColonyWithTokens(metaColony, clnyToken, INITIAL_FUNDING.muln(3));
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
 
       await advanceMiningCycleNoContest({ colonyNetwork, test: this });
       const repCycle = await getActiveRepCycle(colonyNetwork);
@@ -441,7 +441,7 @@ contract("Reputation Mining - types of disagreement", accounts => {
       await giveUserCLNYTokensAndStake(colonyNetwork, MINER2, DEFAULT_STAKE);
 
       await fundColonyWithTokens(metaColony, clnyToken, INITIAL_FUNDING);
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
 
       await advanceMiningCycleNoContest({ colonyNetwork, test: this });
 
@@ -483,7 +483,7 @@ contract("Reputation Mining - types of disagreement", accounts => {
       await giveUserCLNYTokensAndStake(colonyNetwork, MINER2, DEFAULT_STAKE);
 
       await fundColonyWithTokens(metaColony, clnyToken, INITIAL_FUNDING);
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
 
       await advanceMiningCycleNoContest({ colonyNetwork, test: this });
 
@@ -509,7 +509,7 @@ contract("Reputation Mining - types of disagreement", accounts => {
       await giveUserCLNYTokensAndStake(colonyNetwork, MINER2, DEFAULT_STAKE);
 
       await fundColonyWithTokens(metaColony, clnyToken, INITIAL_FUNDING);
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
 
       await advanceMiningCycleNoContest({ colonyNetwork, test: this });
 
@@ -534,7 +534,7 @@ contract("Reputation Mining - types of disagreement", accounts => {
       await giveUserCLNYTokensAndStake(colonyNetwork, MINER2, DEFAULT_STAKE);
 
       await fundColonyWithTokens(metaColony, clnyToken, INITIAL_FUNDING);
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
 
       await advanceMiningCycleNoContest({ colonyNetwork, test: this });
 
@@ -560,9 +560,9 @@ contract("Reputation Mining - types of disagreement", accounts => {
       await giveUserCLNYTokensAndStake(colonyNetwork, MINER2, DEFAULT_STAKE);
 
       await fundColonyWithTokens(metaColony, clnyToken, INITIAL_FUNDING.muln(3));
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
 
       await advanceMiningCycleNoContest({ colonyNetwork, test: this });
 
@@ -588,9 +588,9 @@ contract("Reputation Mining - types of disagreement", accounts => {
       await giveUserCLNYTokensAndStake(colonyNetwork, MINER2, DEFAULT_STAKE);
 
       await fundColonyWithTokens(metaColony, clnyToken, INITIAL_FUNDING.muln(3));
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
 
       await advanceMiningCycleNoContest({ colonyNetwork, test: this });
 
@@ -702,9 +702,9 @@ contract("Reputation Mining - types of disagreement", accounts => {
       await giveUserCLNYTokensAndStake(colonyNetwork, MINER2, DEFAULT_STAKE);
 
       await fundColonyWithTokens(metaColony, clnyToken, INITIAL_FUNDING.muln(3));
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony });
-      await setupFinalizedTask({ colonyNetwork, colony: metaColony, worker: accounts[3] });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
+      await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true, worker: accounts[3] });
 
       await advanceMiningCycleNoContest({ colonyNetwork, test: this });
 
@@ -865,7 +865,8 @@ contract("Reputation Mining - types of disagreement", accounts => {
         workerPayout: 1000000000000,
         managerRating: 2,
         workerRating: 2,
-        worker: accounts[4]
+        worker: accounts[4],
+        claimPayouts: true
       });
 
       await advanceMiningCycleNoContest({ colonyNetwork, test: this });
@@ -880,7 +881,8 @@ contract("Reputation Mining - types of disagreement", accounts => {
         workerPayout,
         managerRating: 2,
         workerRating: 2,
-        worker: accounts[4]
+        worker: accounts[4],
+        claimPayouts: true
       });
 
       await goodClient.resetDB();

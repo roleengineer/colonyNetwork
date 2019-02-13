@@ -89,11 +89,12 @@ contract ColonyFunding is ColonyStorage, PatriciaTreeProofs {
   taskFinalized(_id)
   {
     Payment storage payment = payments[_id];
-    assert(payment.roles[_role].user != address(0x0));
+    Role storage role = payment.roles[_role];
 
     uint payout = payment.payouts[_role][_token];
+    assert(role.user != address(0x0) || payout == 0);
 
-    if (payment.roles[_role].rating == TaskRatings.Unsatisfactory || payout == 0) {
+    if (role.rating == TaskRatings.Unsatisfactory || payout == 0) {
       return;
     }
 
@@ -105,11 +106,12 @@ contract ColonyFunding is ColonyStorage, PatriciaTreeProofs {
     uint fee = calculateNetworkFeeForPayout(payout);
     uint remainder = sub(payout, fee);
 
+    IColonyNetwork colonyNetworkContract = IColonyNetwork(colonyNetworkAddress);
+
     if (_token == address(0x0)) {
       // Payout ether
-      payment.roles[_role].user.transfer(remainder);
+      role.user.transfer(remainder);
       // Fee goes directly to Meta Colony
-      IColonyNetwork colonyNetworkContract = IColonyNetwork(colonyNetworkAddress);
       address metaColonyAddress = colonyNetworkContract.getMetaColony();
       metaColonyAddress.transfer(fee);
     } else {
@@ -117,8 +119,17 @@ contract ColonyFunding is ColonyStorage, PatriciaTreeProofs {
       // TODO: (post CCv1) If it's a whitelisted token, it goes straight to the metaColony
       // If it's any other token, goes to the colonyNetwork contract first to be auctioned.
       ERC20Extended payoutToken = ERC20Extended(_token);
-      payoutToken.transfer(payment.roles[_role].user, remainder);
+      payoutToken.transfer(role.user, remainder);
       payoutToken.transfer(colonyNetworkAddress, fee);
+    }
+
+    // Emit reputation update if paying out Colony's token.
+    if (_token == token) {
+      int256 reputation = calculateReputationIncrease(payout, role.rating, role.rateFail);
+      colonyNetworkContract.appendReputationUpdateLog(role.user, reputation, domains[payment.domainId].skillId);
+      if (_role == uint8(TaskRole.Worker)) {
+        colonyNetworkContract.appendReputationUpdateLog(role.user, reputation, payment.skills[0]);
+      }
     }
 
     emit TaskPayoutClaimed(_id, _role, _token, remainder);
@@ -338,6 +349,16 @@ contract ColonyFunding is ColonyStorage, PatriciaTreeProofs {
     require(keyUserAddress == userAddress, "colony-reputation-invalid-user-address");
 
     return reputationValue;
+  }
+
+  function calculateReputationIncrease(uint256 payout, TaskRatings rating, bool rateFail) internal returns (int256) {
+    require(rating != TaskRatings.None && rating != TaskRatings.Unsatisfactory, "colony-task-rating-invalid");
+
+    uint256 reputation = mul(payout, (rating == TaskRatings.Excellent) ? 3 : 2);
+    reputation = rateFail ? sub(reputation, payout) : reputation;
+
+    // We may lose one wei of reputation here :sad:
+    return int256(reputation / 2);
   }
 
   function calculateRewardForUser(uint256 payoutId, uint256[7] memory squareRoots, uint256 userReputation) internal returns (address, uint256) {

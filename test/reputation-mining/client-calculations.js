@@ -89,7 +89,8 @@ process.env.SOLIDITY_COVERAGE
             colony: metaColony,
             skillId: 5,
             workerPayout: 100,
-            worker: MINER2
+            worker: MINER2,
+            claimPayouts: true
           });
           // Skills in 1 / 4 / 5
           // Miner 2: (100 / 100 / 100)
@@ -99,7 +100,8 @@ process.env.SOLIDITY_COVERAGE
             colony: metaColony,
             skillId: 5,
             workerPayout: 100,
-            worker: MINER1
+            worker: MINER1,
+            claimPayouts: true
           });
           // Miner 1: (100 / 100 / 100)
           // Miner 2: (100 / 100 / 100)
@@ -109,7 +111,8 @@ process.env.SOLIDITY_COVERAGE
             colony: metaColony,
             skillId: 4,
             workerPayout: 900,
-            worker: MINER2
+            worker: MINER2,
+            claimPayouts: true
           });
           // Miner 1: (100 / 100 / 100)
           // Miner 2: (1000 / 1000 / 100)
@@ -119,7 +122,8 @@ process.env.SOLIDITY_COVERAGE
             colony: metaColony,
             skillId: 1,
             workerPayout: 1000,
-            worker: MINER2
+            worker: MINER2,
+            claimPayouts: true
           });
           // Miner 1: (100 / 100 / 100)
           // Miner 2: (2000 / 1000 / 100)
@@ -130,7 +134,8 @@ process.env.SOLIDITY_COVERAGE
             skillId: 5,
             workerPayout: 200,
             workerRating: 1,
-            worker: MINER2
+            worker: MINER2,
+            claimPayouts: true
           });
           // Miner 1: (100 / 100 / 100)
           // Miner 2: (1900 / 900 / 0)
@@ -164,7 +169,8 @@ process.env.SOLIDITY_COVERAGE
             colony: metaColony,
             skillId: 5,
             workerPayout: 100,
-            worker: MINER2
+            worker: MINER2,
+            claimPayouts: true
           });
           // Skills in 1 / 4 / 5
           // Miner 2: (100 / 100 / 100)
@@ -174,7 +180,8 @@ process.env.SOLIDITY_COVERAGE
             colony: metaColony,
             skillId: 5,
             workerPayout: 100,
-            worker: MINER1
+            worker: MINER1,
+            claimPayouts: true
           });
           // Miner 1: (100 / 100 / 100)
           // Miner 2: (100 / 100 / 100)
@@ -184,7 +191,8 @@ process.env.SOLIDITY_COVERAGE
             colony: metaColony,
             skillId: 4,
             workerPayout: 900,
-            worker: MINER2
+            worker: MINER2,
+            claimPayouts: true
           });
           // Miner 1: (100 / 100 / 100)
           // Miner 2: (1000 / 1000 / 100)
@@ -195,7 +203,8 @@ process.env.SOLIDITY_COVERAGE
             skillId: 4,
             workerPayout: 200,
             workerRating: 1,
-            worker: MINER2
+            worker: MINER2,
+            claimPayouts: true
           });
           // Miner 1: (100 / 100 / 100)
           // Miner 2: (800 / 800 / 80)
@@ -229,7 +238,8 @@ process.env.SOLIDITY_COVERAGE
             colony: metaColony,
             skillId: 5,
             workerPayout: 100,
-            worker: MINER2
+            worker: MINER2,
+            claimPayouts: true
           });
           // Skills in 1 / 4 / 5
           // Miner 2: (100 / 100 / 100)
@@ -239,7 +249,8 @@ process.env.SOLIDITY_COVERAGE
             colony: metaColony,
             skillId: 5,
             workerPayout: 100,
-            worker: MINER1
+            worker: MINER1,
+            claimPayouts: true
           });
           // Miner 1: (100 / 100 / 100)
           // Miner 2: (100 / 100 / 100)
@@ -249,7 +260,8 @@ process.env.SOLIDITY_COVERAGE
             colony: metaColony,
             skillId: 4,
             workerPayout: 900,
-            worker: MINER2
+            worker: MINER2,
+            claimPayouts: true
           });
           // Miner 1: (100 / 100 / 100)
           // Miner 2: (1000 / 1000 / 100)
@@ -259,7 +271,8 @@ process.env.SOLIDITY_COVERAGE
             colony: metaColony,
             skillId: 1,
             workerPayout: 500,
-            worker: MINER2
+            worker: MINER2,
+            claimPayouts: true
           });
           // Miner 1: (100 / 100 / 100)
           // Miner 2: (1500 / 1000 / 100)
@@ -270,7 +283,8 @@ process.env.SOLIDITY_COVERAGE
             skillId: 4,
             workerPayout: 100000000,
             workerRating: 1,
-            worker: MINER2
+            worker: MINER2,
+            claimPayouts: true
           });
           // Miner 1: (100 / 100 / 100)
           // Miner 2: (500 / 0 / 0)

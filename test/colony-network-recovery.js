@@ -262,7 +262,7 @@ contract("Colony Network Recovery", accounts => {
           await giveUserCLNYTokensAndStake(colonyNetwork, accounts[5], DEFAULT_STAKE);
 
           await fundColonyWithTokens(metaColony, clny);
-          await setupFinalizedTask({ colonyNetwork, colony: metaColony });
+          await setupFinalizedTask({ colonyNetwork, colony: metaColony, claimPayouts: true });
 
           await client.saveCurrentState();
           const startingHash = await client.getRootHash();

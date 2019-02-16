@@ -11,6 +11,7 @@ const ReputationMiningCycleRespond = artifacts.require("./ReputationMiningCycleR
 const ENSRegistry = artifacts.require("./ENSRegistry");
 const EtherRouter = artifacts.require("./EtherRouter");
 const Resolver = artifacts.require("./Resolver");
+const OneTxPayment = artifacts.require("./OneTxPayment");
 
 // We `require` the ReputationMiningCycle object to make sure
 // it is injected in the `artifacts` variables during test
@@ -30,4 +31,5 @@ module.exports = (deployer, network) => {
   deployer.deploy(EtherRouter);
   deployer.deploy(Resolver);
   deployer.deploy(ContractRecovery);
+  deployer.deploy(OneTxPayment);
 };

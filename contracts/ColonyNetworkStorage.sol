@@ -15,7 +15,7 @@
   along with The Colony Network. If not, see <http://www.gnu.org/licenses/>.
 */
 
-pragma solidity >=0.4.23 <0.5.0;
+pragma solidity >=0.4.23;
 
 import "../lib/dappsys/math.sol";
 import "./ERC20Extended.sol";
@@ -30,7 +30,7 @@ contract ColonyNetworkStorage is CommonStorage, ColonyNetworkDataTypes, DSMath {
   // uint256 version number of the latest deployed Colony contract, used in creating new colonies
   uint256 currentColonyVersion; // Storage slot 7
   // Address of the Meta Colony
-  address metaColony; // Storage slot 8
+  address payable metaColony; // Storage slot 8
   // Address of token locking contract
   address tokenLocking; // Storage slot 9
   // Network fee inverse value, e.g 5% => 100/5=20, 1% => 100/1=100 etc.

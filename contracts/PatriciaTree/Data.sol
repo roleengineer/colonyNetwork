@@ -1,5 +1,6 @@
 pragma solidity >=0.4.23;
 pragma experimental "ABIEncoderV2";
+pragma experimental SMTChecker;
 
 import {Bits} from "./Bits.sol";
 

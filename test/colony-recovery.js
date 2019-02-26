@@ -9,6 +9,8 @@ const { expect } = chai;
 chai.use(bnChai(web3.utils.BN));
 
 contract("Colony Recovery", accounts => {
+  const FOUNDER = accounts[0];
+
   let colony;
   let colonyNetwork;
   let metaColony;
@@ -27,8 +29,7 @@ contract("Colony Recovery", accounts => {
 
   describe("when using recovery mode", () => {
     it("should be able to check whether we are in recovery mode", async () => {
-      const founder = accounts[0];
-      await colony.setRecoveryRole(founder);
+      await colony.setRecoveryRole(FOUNDER);
 
       let recoveryMode = await colony.isInRecoveryMode();
       expect(recoveryMode).to.be.false;
@@ -39,13 +40,12 @@ contract("Colony Recovery", accounts => {
     });
 
     it("should be able to add and remove recovery roles when not in recovery", async () => {
-      const founder = accounts[0];
       let numRecoveryRoles;
 
       numRecoveryRoles = await colony.numRecoveryRoles();
       expect(numRecoveryRoles).to.be.zero;
 
-      await colony.setRecoveryRole(founder);
+      await colony.setRecoveryRole(FOUNDER);
       await colony.setRecoveryRole(accounts[1]);
       await colony.setRecoveryRole(accounts[2]);
       numRecoveryRoles = await colony.numRecoveryRoles();
@@ -62,33 +62,31 @@ contract("Colony Recovery", accounts => {
       expect(numRecoveryRoles).to.eq.BN(2);
 
       // Can remove founder
-      await colony.removeRecoveryRole(founder);
+      await colony.removeRecoveryRole(FOUNDER);
       numRecoveryRoles = await colony.numRecoveryRoles();
       expect(numRecoveryRoles).to.eq.BN(1);
     });
 
     it("should not error when adding recovery roles for existing recovery users", async () => {
-      const founder = accounts[0];
       let numRecoveryRoles;
 
       numRecoveryRoles = await colony.numRecoveryRoles();
       expect(numRecoveryRoles).to.be.zero;
 
-      await colony.setRecoveryRole(founder);
+      await colony.setRecoveryRole(FOUNDER);
       await colony.setRecoveryRole(accounts[1]);
       numRecoveryRoles = await colony.numRecoveryRoles();
       expect(numRecoveryRoles).to.eq.BN(2);
 
       // Can add twice
-      await colony.setRecoveryRole(founder);
+      await colony.setRecoveryRole(FOUNDER);
       await colony.setRecoveryRole(accounts[1]);
       numRecoveryRoles = await colony.numRecoveryRoles();
       expect(numRecoveryRoles).to.eq.BN(2);
     });
 
     it("should not be able to add and remove roles when in recovery", async () => {
-      const founder = accounts[0];
-      await colony.setRecoveryRole(founder);
+      await colony.setRecoveryRole(FOUNDER);
       await colony.enterRecoveryMode();
       await checkErrorRevert(colony.setAdminRole(accounts[1]), "colony-in-recovery-mode");
       await checkErrorRevert(colony.removeAdminRole(accounts[1]), "colony-in-recovery-mode");
@@ -98,11 +96,10 @@ contract("Colony Recovery", accounts => {
     });
 
     it("should not be able to call normal functions while in recovery", async () => {
-      const founder = accounts[0];
-      await colony.setRecoveryRole(founder);
+      await colony.setRecoveryRole(FOUNDER);
       await colony.enterRecoveryMode();
 
-      await metaColony.setRecoveryRole(founder);
+      await metaColony.setRecoveryRole(FOUNDER);
       await metaColony.enterRecoveryMode();
 
       await checkErrorRevert(colony.initialiseColony(ZERO_ADDRESS, ZERO_ADDRESS), "colony-in-recovery-mode");
@@ -112,8 +109,7 @@ contract("Colony Recovery", accounts => {
     });
 
     it("should exit recovery mode with sufficient approvals", async () => {
-      const founder = accounts[0];
-      await colony.setRecoveryRole(founder);
+      await colony.setRecoveryRole(FOUNDER);
       await colony.setRecoveryRole(accounts[1]);
       await colony.setRecoveryRole(accounts[2]);
 
@@ -133,8 +129,7 @@ contract("Colony Recovery", accounts => {
     });
 
     it("recovery users can work in recovery mode", async () => {
-      const founder = accounts[0];
-      await colony.setRecoveryRole(founder);
+      await colony.setRecoveryRole(FOUNDER);
       await colony.setRecoveryRole(accounts[1]);
 
       await colony.enterRecoveryMode();
@@ -147,8 +142,7 @@ contract("Colony Recovery", accounts => {
     });
 
     it("users cannot approve twice", async () => {
-      const founder = accounts[0];
-      await colony.setRecoveryRole(founder);
+      await colony.setRecoveryRole(FOUNDER);
       await colony.enterRecoveryMode();
       await colony.setStorageSlotRecovery(5, "0xdeadbeef");
 
@@ -157,15 +151,13 @@ contract("Colony Recovery", accounts => {
     });
 
     it("users cannot approve if unauthorized", async () => {
-      const founder = accounts[0];
-      await colony.setRecoveryRole(founder);
+      await colony.setRecoveryRole(FOUNDER);
       await colony.enterRecoveryMode();
       await checkErrorRevert(colony.approveExitRecovery({ from: accounts[1] }), "ds-auth-unauthorized");
     });
 
     it("should allow editing of general variables", async () => {
-      const founder = accounts[0];
-      await colony.setRecoveryRole(founder);
+      await colony.setRecoveryRole(FOUNDER);
       await colony.enterRecoveryMode();
       await colony.setStorageSlotRecovery(5, "0xdeadbeef");
 
@@ -174,9 +166,7 @@ contract("Colony Recovery", accounts => {
     });
 
     it("should not allow editing of protected variables", async () => {
-      const founder = accounts[0];
-
-      await colony.setRecoveryRole(founder);
+      await colony.setRecoveryRole(FOUNDER);
       await colony.enterRecoveryMode();
       await checkErrorRevert(colony.setStorageSlotRecovery(0, "0xdeadbeef"), "colony-common-protected-variable");
       await checkErrorRevert(colony.setStorageSlotRecovery(1, "0xdeadbeef"), "colony-common-protected-variable");
@@ -186,11 +176,10 @@ contract("Colony Recovery", accounts => {
     });
 
     it("should allow upgrade to be called on a colony in and out of recovery mode", async () => {
-      const founder = accounts[0];
       // Note that we can't upgrade, because we don't have a new version. But this test is still valid, because we're getting the
       // 'version must be newer' error, not a `colony-not-in-recovery-mode` or `colony-in-recovery-mode` error.
       await checkErrorRevert(colony.upgrade(1), "colony-version-must-be-newer");
-      await colony.setRecoveryRole(founder);
+      await colony.setRecoveryRole(FOUNDER);
       await colony.enterRecoveryMode();
       await checkErrorRevert(colony.upgrade(1), "colony-version-must-be-newer");
     });

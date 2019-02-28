@@ -114,6 +114,36 @@ export function web3GetRawCall(params) {
   });
 }
 
+export function stopMining() {
+  const packet = {
+    jsonrpc: "2.0",
+    method: "miner_stop",
+    id: new Date().getTime()
+  };
+
+  return new Promise((resolve, reject) => {
+    web3.currentProvider.send(packet, (err, res) => {
+      if (err !== null) return reject(err);
+      return resolve(res);
+    });
+  });
+}
+
+export function startMining() {
+  const packet = {
+    jsonrpc: "2.0",
+    method: "miner_start",
+    id: new Date().getTime()
+  };
+
+  return new Promise((resolve, reject) => {
+    web3.currentProvider.send(packet, (err, res) => {
+      if (err !== null) return reject(err);
+      return resolve(res);
+    });
+  });
+}
+
 // Borrowed from `truffle` https://github.com/trufflesuite/truffle/blob/next/packages/truffle-contract/lib/reason.js
 export function extractReasonString(res) {
   if (!res || (!res.error && !res.result)) return "";
